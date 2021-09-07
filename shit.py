@@ -34,7 +34,6 @@ class Board(Frame):
         news_frame = Frame(self, height=300, bg='black')
         news_frame.pack(side="bottom", fill="both")
         self.news_label = ttk.Label(news_frame, font=self.middleFont, background="pink", foreground="white")
-        #self.news_label.pack(side="bottom", fill="x", anchor="center")
         self.news_label.pack(anchor="center")
 
         # 날씨
