@@ -46,7 +46,6 @@ class Board(Frame):
         schedule_frame = Frame(self, bg='blue')
         schedule_frame.pack(side="right", fill="y")
         self.schedule_label = ttk.Label(schedule_frame, font=self.largeFont, background="black", foreground="white", text="schedule")
-        #self.schedule_label.pack(side="right", fill="y")
         self.schedule_label.pack(anchor="center")
 
     # 시계 기능
@@ -83,5 +82,4 @@ root.attributes("-fullscreen", True)
 
 root.bind("<F11>", lambda event: root.attributes("-fullscreen", not root.attributes("-fullscreen")))
 root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))
-#mirror.updateWeather()
 root.mainloop()
