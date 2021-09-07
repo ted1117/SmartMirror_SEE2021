@@ -12,6 +12,7 @@ root.configure(background="black")
 root.resizable(1, 1)
 
 class Board(Frame):
+    cnt = 0
     # 전체 GUI 구현
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -62,10 +63,17 @@ class Board(Frame):
 
     # 뉴스 기능
     def updateNews(self):
-        while True:
-            for headline in newsfeed.get_newsfeed():
-                self.news_label.configure(text=headline)
-                time.sleep(3)
+        num_of_news = len(newsfeed.get_newsfeed()) - 1
+        if Board.cnt < num_of_news:
+            self.news_label.configure(text=newsfeed.get_newsfeed()[Board.cnt])
+            Board.cnt += 1
+            self.news_label.after(3000, self.updateNews)
+        else:
+            self.news_label.configure(text=newsfeed.get_newsfeed()[num_of_news])
+            Board.cnt = 0
+            self.news_label.after(3000, self.updateNews)
+        
+        
 
 # 실행
 mirror = Board(root)
