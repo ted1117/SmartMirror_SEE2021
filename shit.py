@@ -20,9 +20,9 @@ class Board(Frame):
         self.pack(expand=True, fill=BOTH)
         
         # 글꼴
-        self.largeFont = ("MalgunGothic", 68)
-        self.middleFont = ("맑은고딕", 45)
-        self.normalFont = ("MalgunGothic", 30)
+        self.largeFont = ("맑은 고딕", 68)
+        self.middleFont = ("맑은 고딕", 45)
+        self.normalFont = ("맑은 고딕", 30)
 
         # 시간/날짜
         self.time_label = ttk.Label(self, font=self.largeFont, background="black", foreground="white")
@@ -50,8 +50,10 @@ class Board(Frame):
 
     # 시계 기능
     def digit_clock(self):
+        yoil = ["월", "화", "수", "목", "금", "토", "일"]
+        today = yoil[time.localtime().tm_wday]
         self.time_label.configure(text=time.strftime("%H:%M:%S"))
-        self.date_label.configure(text=time.strftime("%m월 %d일"))
+        self.date_label.configure(text=time.strftime("%m월 %d일 ") + "(" + today + ")")
         self.time_label.after(200, self.digit_clock)
 
     # 날씨 기능
