@@ -67,80 +67,9 @@ def get_weather():
     fcstTime_tmp = now + datetime.timedelta(hours=1)
     fcstTime = fcstTime_tmp.strftime("%H00")
     #print(fcstTime)
-    
-    '''
-    시간 별로 리스트를 생성하는 방법
-    fcst_now = [0, 0, 0, 0]
-    fcst_aft2 = [0, 0, 0, 0]
-    fcst_aft4 = [0, 0, 0, 0]
-
-    for n in range(42):
-        if dict_data[n].get("category") == "T1H" and dict_data[n].get("fcstTime") == fcstTime:  #기온
-           # k = n
-            fcst_now[0] = dict_data[n].get("fcstValue")
-            fcst_aft2[0] = dict_data[n+2].get("fcstValue")
-            fcst_aft4[0] = dict_data[n+4].get("fcstValue")
-
-        elif dict_data[n].get("category") == "RN1" and dict_data[n].get("fcstTime") == fcstTime:    #강수량
-            #k = n
-            fcst_now[1] = dict_data[n].get("fcstValue")
-            fcst_aft2[1] = dict_data[n+2].get("fcstValue")
-            fcst_aft4[1] = dict_data[n+4].get("fcstValue")
-
-        elif dict_data[n].get("category") == "SKY" and dict_data[n].get("fcstTime") == fcstTime:    #하늘상태
-            #k = n
-            fcst_now[2] = dict_data[n].get("fcstValue")
-            fcst_aft2[2] = dict_data[n+3].get("fcstValue")
-            fcst_aft4[2] = dict_data[n+5].get("fcstValue")
-
-        elif dict_data[n].get("category") == "PTY" and dict_data[n].get("fcstTime") == fcstTime:    #강수형태
-            #k = n
-            fcst_now[3] = dict_data[n].get("fcstValue")
-            fcst_aft2[3] = dict_data[n+2].get("fcstValue")
-            fcst_aft4[3] = dict_data[n+4].get("fcstValue")
-
-    # 리스트/딕셔너리 print 하기
-    print(fcst_now)
-    print(fcst_aft2)
-    print(fcst_aft4)
-    '''
-    '''
-    # 시간 별로 딕셔너리를 생성하는 방법
-    fcst_now = {"temp": 0, "RN1": 0, "SKY": 0, "PTY": 0}
-    fcst_aft2 = {"temp": 0, "RN1": 0, "SKY": 0, "PTY": 0}
-    fcst_aft4 = {"temp": 0, "RN1": 0, "SKY": 0, "PTY": 0}
-
-    for n in range(42):
-        if dict_data[n].get("category") == "T1H" and dict_data[n].get("fcstTime") == fcstTime:  #기온
-            fcst_now["temp"] = dict_data[n].get("fcstValue")
-            fcst_aft2["temp"] = dict_data[n+2].get("fcstValue")
-            fcst_aft4["temp"] = dict_data[n+4].get("fcstValue")
-            
-        elif dict_data[n].get("category") == "RN1" and dict_data[n].get("fcstTime") == fcstTime:    #강수량
-            #k = n
-            fcst_now["RN1"] = dict_data[n].get("fcstValue")
-            fcst_aft2["RN1"] = dict_data[n+2].get("fcstValue")
-            fcst_aft4["RN1"] = dict_data[n+4].get("fcstValue")
-
-        elif dict_data[n].get("category") == "SKY" and dict_data[n].get("fcstTime") == fcstTime:    #하늘상태
-            #k = n
-            fcst_now["SKY"] = dict_data[n].get("fcstValue")
-            fcst_aft2["SKY"] = dict_data[n+3].get("fcstValue")
-            fcst_aft4["SKY"] = dict_data[n+5].get("fcstValue")
-
-        elif dict_data[n].get("category") == "PTY" and dict_data[n].get("fcstTime") == fcstTime:    #강수형태
-        #k = n
-            fcst_now["PTY"] = dict_data[n].get("fcstValue")
-            fcst_aft2["PTY"] = dict_data[n+2].get("fcstValue")
-            fcst_aft4["PTY"] = dict_data[n+4].get("fcstValue")
-
-    # 리스트/딕셔너리 print 하기
-    print(fcst_now)
-    print(fcst_aft2)
-    print(fcst_aft4)
-    '''
 
     # 하나의 딕셔너리에 각 시간 별로 리스트 값에 대입
+    # 딕셔너리 값은 각각 현재, 2시간뒤, 4시간뒤의 값
     fcst_dict = {"temp": [0, 0, 0], "RN1": [0, 0, 0], "SKY": [0, 0, 0], "PTY": [0, 0, 0]}
 
     for n in range(42):
@@ -164,16 +93,7 @@ def get_weather():
             fcst_dict["PTY"][1] = dict_data[n+2].get("fcstValue")
             fcst_dict["PTY"][2] = dict_data[n+4].get("fcstValue")
 
-    # 리스트/딕셔너리 print 하기
-    #print(fcst_dict)
-
     return fcst_dict
-
-    #print(dict_data)
-
-    # 엑셀로 저장하기
-    #df = pd.DataFrame(dict_data)
-    #df.to_excel(excel_writer="get_weather.xlsx")
 
 
 if __name__ == "__main__":
