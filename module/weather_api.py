@@ -49,29 +49,27 @@ def get_weather():
                 )
 
     # xml 파싱하기
-    #print("파싱시작")
-    print(url + queryParams)
+    #print(url + queryParams) # 비상시 확인
     res = requests.get(url, queryParams)
-    #print("-----------------------------------------------------------------------------------------")
-    
-    #print(res)
     xml = xmltodict.parse(res.text)
     dict1 = json.loads(json.dumps(xml))
     dict_data = dict1['response']['body']['items']['item']
-    #print("파싱 완료")
-    # 필요한 데이터: T1H(기온), RN1(1시간 강수량), SKY(하늘상태), PTY(강수형태)
-    # 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
-    # 강수형태(PTY) 코드 : (초단기) 없음(0), 비(1), 비/눈(2), 눈(3), 빗방울(5), 빗방울눈날림(6), 눈날림(7) 
+
+    
 
     # fcstTime 생성하기
     fcstTime_tmp = now + datetime.timedelta(hours=1)
     fcstTime = fcstTime_tmp.strftime("%H00")
-    #print(fcstTime)
 
-    # 하나의 딕셔너리에 각 시간 별로 리스트 값에 대입
+    # 필요한 데이터: T1H(기온), RN1(1시간 강수량), SKY(하늘상태), PTY(강수형태)
+    # 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
+    # 강수형태(PTY) 코드 : (초단기) 없음(0), 비(1), 비/눈(2), 눈(3), 빗방울(5), 빗방울눈날림(6), 눈날림(7) 
+
+    # 딕셔너리 생성 및 초기화
     # 딕셔너리 값은 각각 현재, 2시간뒤, 4시간뒤의 값
-    fcst_dict = {"temp": [0, 0, 0], "RN1": [0, 0, 0], "SKY": [0, 0, 0], "PTY": [0, 0, 0]}
+    fcst_dict = {"temp": [0, 0, 0], "RN1": [0, 0, 0], "SKY": [0, 0, 0], "PTY": [0, 0, 0]} 
 
+    # 딕셔너리에 각 시간 별로 리스트 값에 대입
     for n in range(42):
         if dict_data[n].get("category") == "T1H" and dict_data[n].get("fcstTime") == fcstTime:  #기온
             fcst_dict["temp"][0] = dict_data[n].get("fcstValue")
