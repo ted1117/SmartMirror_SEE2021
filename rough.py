@@ -3,12 +3,12 @@ from tkinter import *
 from tkinter import ttk
 import tkinter
 import time
-import weather_api
+from module import weather_api
 
 # 속성
 root = tkinter.Tk()
 root.title("Smart Mirror")
-root.geometry("1080x720")
+root.geometry("1920x1080")
 root.configure(background="black")
 root.resizable(False, False)
 
