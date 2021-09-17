@@ -1,12 +1,8 @@
 from tkinter import * 
 from tkinter import ttk
-import tkinter
 import time, datetime
 from PIL import Image, ImageTk
 from module import newsfeed, weather_api, sunsetrise_api, gcalendar
-
-font_L = ("맑은 고딕", 80)
-
 
 class Clock(Frame):
     def __init__(self, master):
@@ -281,14 +277,14 @@ class Calendar(Frame):
     def updateTodo(self):
         self.schedule_label.after(10000000, self.updateTodo)
 
-        self.todo1_tlabel.configure(text=gcalendar.getTodo()[0]["start"])
-        self.todo1_slabel.configure(text=gcalendar.getTodo()[0]["summary"])
+        tlabel_list = [self.todo1_tlabel, self.todo2_tlabel, self.todo3_tlabel]
+        slabel_list = [self.todo1_slabel, self.todo2_slabel, self.todo3_slabel]
 
-        self.todo2_tlabel.configure(text=gcalendar.getTodo()[1]["start"])
-        self.todo2_slabel.configure(text=gcalendar.getTodo()[1]["summary"])
-
-        self.todo3_tlabel.configure(text=gcalendar.getTodo()[2]["start"])
-        self.todo3_slabel.configure(text=gcalendar.getTodo()[2]["summary"])
+        for n in range(len(gcalendar.getTodo())):
+            tlabel = tlabel_list[n]
+            slabel = slabel_list[n]
+            tlabel.configure(text=gcalendar.getTodo()[n]["start"])
+            slabel.configure(text=gcalendar.getTodo()[n]["summary"])
 
 class Board:
     def __init__(self):
