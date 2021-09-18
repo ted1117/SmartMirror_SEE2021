@@ -31,6 +31,9 @@ class Weather(Frame):
         fcstTime2 = fcstTime2_tmp.strftime("%H시")
         fcstTime4 = fcstTime4_tmp.strftime("%H시")
 
+        global weather_dict
+        weather_dict = weather_api.get_weather()
+
         # 현재 날씨
         self.icon_label = ttk.Label(self, background="black")
         self.icon_label.grid(column=0, row=0)
@@ -68,7 +71,6 @@ class Weather(Frame):
         self.WeatherIn4()
 
     def updateWeather(self):
-        weather_dict = weather_api.get_weather()
         self.temp_label.configure(text=" " + weather_dict["temp"][0] + "°C")
         self.temp_label.after(600000, self.updateWeather)
         
@@ -119,8 +121,7 @@ class Weather(Frame):
         self.icon_label.image = photo
 
     def WeatherIn2(self):
-        weather_dict = weather_api.get_weather()
-        self.temp2_label.configure(text=weather_dict["temp"][0] + "°C")
+        self.temp2_label.configure(text=weather_dict["temp"][1] + "°C")
         self.temp2_label.after(600000, self.WeatherIn2)
         width = 50
         height = 50
@@ -172,7 +173,6 @@ class Weather(Frame):
         self.wth2_label.image = icon
 
     def WeatherIn4(self):
-        weather_dict = weather_api.get_weather()
         self.temp4_label.configure(text=weather_dict["temp"][2] + "°C")
         self.temp4_label.after(600000, self.WeatherIn4)
         width = 50
