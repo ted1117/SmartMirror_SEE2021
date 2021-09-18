@@ -1,14 +1,25 @@
+"""
+기상청의 초단기예보조회를 이용하여 설정된 지역의 현재, 2시간 뒤, 4시간 뒤의 날씨를 확인함.
+"""
+
 import requests
 import urllib.parse
 import datetime
 import xmltodict # 따로 설치
-import pandas as pd # 따로 설치
 import json
-import timeit
 
 def get_weather():
+    """
+    초단기예보조회에서 불러온 날씨 데이터를 딕셔너리에 추가
+
+    기온, 강수량, 하늘상태, 강수형태의 리스트를 추가한 딕셔너리 fcst_dict를 리턴함.
+    """
+    # secret.json에 저장된 일반 인증키(Encoding)를 불러오기
+    with open("secret.json") as json_file:
+        json_data = json.load(json_file)
+
     url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst'
-    service_key = "n%2BQsBq1EpkbRHO6I5tjZHyBJFOygdGvs2Pyjtdc68xE9Hq2JhqYCa7sGjQyTH5scIQwa3OS40ZL%2FBqoH0amhtQ%3D%3D"
+    service_key = json_data
 
     # 좌표 설정 (서울시 동작구 상도1동)
     x_ssu = "59"
@@ -21,22 +32,18 @@ def get_weather():
         date_temp = now - datetime.timedelta(days=1)
         base_date = date_temp.strftime("%Y%m%d")
         base_time = "2330"
-        #print(base_time)
 
     elif now.minute <= 30:
         base_date = now.strftime("%Y%m%d")
         time_temp = now - datetime.timedelta(hours=1)
         base_time = time_temp.strftime("%H") + "30"
-        #print(base_time)
 
     else:
         base_date = now.strftime("%Y%m%d")
         base_time = now.strftime("%H30")
-        #print(base_time)
 
     # 초단기예보 데이터 불러오기
-    queryParams = "?serviceKey=" + service_key + "&" + urllib.parse.urlencode(
-                    {
+    queryParams = "?" + urllib.parse.urlencode({
                         urllib.parse.quote_plus("serviceKey"): urllib.parse.unquote(service_key),
                         urllib.parse.quote_plus("pageNo"): "1",
                         urllib.parse.quote_plus("numOfRows"): "60",
@@ -45,17 +52,14 @@ def get_weather():
                         urllib.parse.quote_plus("base_time"): base_time,
                         urllib.parse.quote_plus("nx"): x_ssu,
                         urllib.parse.quote_plus("ny"): y_ssu
-                    }
-                )
+                    })
 
     # xml 파싱하기
-    #print(url + queryParams) # 비상시 확인
-    res = requests.get(url, queryParams)
+    print(url + queryParams)
+    res = requests.get(url + queryParams)
     xml = xmltodict.parse(res.text)
     dict1 = json.loads(json.dumps(xml))
     dict_data = dict1['response']['body']['items']['item']
-
-    
 
     # fcstTime 생성하기
     fcstTime_tmp = now + datetime.timedelta(hours=1)
@@ -83,8 +87,8 @@ def get_weather():
 
         elif dict_data[n].get("category") == "SKY" and dict_data[n].get("fcstTime") == fcstTime:    #하늘상태
             fcst_dict["SKY"][0] = dict_data[n].get("fcstValue")
-            fcst_dict["SKY"][1] = dict_data[n+3].get("fcstValue")
-            fcst_dict["SKY"][2] = dict_data[n+5].get("fcstValue")
+            fcst_dict["SKY"][1] = dict_data[n+2].get("fcstValue")
+            fcst_dict["SKY"][2] = dict_data[n+4].get("fcstValue")
 
         elif dict_data[n].get("category") == "PTY" and dict_data[n].get("fcstTime") == fcstTime:    #강수형태
             fcst_dict["PTY"][0] = dict_data[n].get("fcstValue")
@@ -95,8 +99,4 @@ def get_weather():
 
 
 if __name__ == "__main__":
-    start_time = timeit.default_timer()
-    a = get_weather()
-    print(a)
-    terminate_time = timeit.default_timer()
-    print("%f초 걸렸습니다." % (terminate_time - start_time))
+    get_weather()

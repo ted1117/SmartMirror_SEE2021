@@ -1,8 +1,17 @@
+"""
+연합뉴스에서 제공하는 헤드라인 RSS를 이용하여 오늘의 헤드라인 수집
+"""
+
 import requests
 import xmltodict # 따로 설치
 import json
 
 def get_newsfeed():
+    """
+    연합뉴스 rss에서 헤드라인을 수집하여 리스트에 추가
+
+    제공되는 헤드라인 5개가 포함된 리스트 news_headline이 리턴됨
+    """
     url = "https://www.yonhapnewstv.co.kr/category/news/headline/feed/" # 연합뉴스 헤드라인 RSS 이용
     res = requests.get(url)
     xml = xmltodict.parse(res.text)
@@ -19,5 +28,4 @@ def get_newsfeed():
     return news_headlines
     
 if __name__ == "__main__":
-    a = get_newsfeed()
-    print(a)
+    get_newsfeed()
