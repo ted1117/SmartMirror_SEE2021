@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import time, datetime
 from PIL import Image, ImageTk
-from module import newsfeed, weather_api, sunsetrise_api, gcalendar
+from module import newsfeed, weather_api, sunsetrise_api, gcalendar, PMgrade_api
 
 class Clock(Frame):
     def __init__(self, master):
@@ -36,39 +36,76 @@ class Weather(Frame):
 
         # 현재 날씨
         self.icon_label = ttk.Label(self, background="black")
-        self.icon_label.grid(column=0, row=0)
+        self.icon_label.grid(column=0, row=0, columnspan=2)
         self.temp_label = ttk.Label(self, font=Board.largeFont, background="black", foreground="white")
-        self.temp_label.grid(column=2, row=0)
+        self.temp_label.grid(column=2, row=0, columnspan=4)
         self.wth_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
-        self.wth_label.grid(column=2, row=1, sticky="e")
+        self.wth_label.grid(column=5, row=1)
+        self.PM25_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white", text="미세")
+        self.PM25_label.grid(column=2, row=2)
+        self.PM25grd_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
+        self.PM25grd_label.grid(column=3, row=2)
+        self.PM10_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white", text="• 초미세")
+        self.PM10_label.grid(column=4, row=2)
+        self.PM10grd_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
+        self.PM10grd_label.grid(column=5, row=2)
         s1 = ttk.Separator(self, orient='horizontal')
-        s1.grid(column=0, row=2, sticky="ew", columnspan=3)
+        s1.grid(column=0, row=3, sticky="ew", columnspan=6)
 
         # 2시간 뒤 날씨
         self.time2_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white", text=fcstTime2)
-        self.time2_label.grid(column=0, row=3)
+        self.time2_label.grid(column=0, row=4)
         s11 = ttk.Separator(self, orient="vertical")
-        s11.grid(column=1, row=3, sticky="ns", rowspan=4)
+        s11.grid(column=1, row=4, sticky="ns", rowspan=4)
+        self.wth2_icon = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
+        self.wth2_icon.grid(column=2, row=4)
         self.wth2_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
-        self.wth2_label.grid(column=2, row=3, sticky="w")
+        self.wth2_label.grid(column=3, row=4)
         self.temp2_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
-        self.temp2_label.grid(column=2, row=3, sticky="e")
+        self.temp2_label.grid(column=5, row=4)
         s2 = ttk.Separator(self, orient='horizontal')
-        s2.grid(column=0, row=4, sticky="ew", columnspan=3)
+        s2.grid(column=0, row=5, sticky="ew", columnspan=6)
 
         # 4시간 뒤 날씨
         self.time4_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white", text=fcstTime4)
-        self.time4_label.grid(column=0, row=5)
+        self.time4_label.grid(column=0, row=6)
+        self.wth4_icon = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
+        self.wth4_icon.grid(column=2, row=6)
         self.wth4_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
-        self.wth4_label.grid(column=2, row=5, sticky="w")
+        self.wth4_label.grid(column=3, row=6)
         self.temp4_label = ttk.Label(self, font=Board.smallFont, background="black", foreground="white")
-        self.temp4_label.grid(column=2, row=5, sticky="e")
+        self.temp4_label.grid(column=5, row=6)
         s3 = ttk.Separator(self, orient='horizontal')
-        s3.grid(column=0, row=6, sticky="ew", columnspan=3)
+        s3.grid(column=0, row=7, sticky="ew", columnspan=6)
         
+        self.updatePMgrade()
         self.updateWeather()
         self.WeatherIn2()
         self.WeatherIn4()
+
+    def updatePMgrade(self):
+        pm25 = PMgrade_api.getPMstatus()["pm25Grade"]
+        pm10 = PMgrade_api.getPMstatus()["pm10Grade"]
+
+        if pm25 == "1":
+            self.PM25grd_label.configure(text="좋음", foreground="skyblue")
+        elif pm25 == "2":
+            self.PM25grd_label.configure(text="보통", foreground="green")
+        elif pm25 == "3":
+            self.PM25grd_label.configure(text="나쁨", foreground="orange")
+        elif pm25 == "4":
+            self.PM25grd_label.configure(text="매우나쁨", foreground="red")
+
+        if pm10 == "1":
+            self.PM10grd_label.configure(text="좋음", foreground="skyblue")
+        elif pm10 == "2":
+            self.PM10grd_label.configure(text="보통", foreground="green")
+        elif pm10 == "3":
+            self.PM10grd_label.configure(text="나쁨", foreground="orange")
+        elif pm10 == "4":
+            self.PM10grd_label.configure(text="매우나쁨", foreground="red")
+        
+        self.PM10grd_label.after(1800000, self.updatePMgrade)
 
     def updateWeather(self):
         self.temp_label.configure(text=" " + weather_dict["temp"][0] + "°C")
@@ -134,7 +171,7 @@ class Weather(Frame):
             else:
                 img = Image.open("assets/clear_night.png")
                 icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="맑음")
+            self.wth2_label.configure(text="맑음")
 
         elif weather_dict["SKY"][1] == "3":
             if (sunsetrise_api.get_sunset()[0] < int(time.strftime("%H%M")) < sunsetrise_api.get_sunset()[1]):
@@ -143,34 +180,35 @@ class Weather(Frame):
             else:
                 img = Image.open("assets/cloudy_night.png")
                 icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="구름많음")
+            self.wth2_label.configure(text="구름많음")
         
         elif weather_dict["SKY"][1] == "4":
             img = Image.open("assets/too_cloudy.png")
             icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="흐림")
+            self.wth2_label.configure(text="흐림")
 
         elif weather_dict["PTY"][1] == "1":
             img = Image.open("assets/rainy2.png")
             icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="비")
+            self.wth2_label.configure(text="비")
 
         elif weather_dict["PTY"][1] == "2":
             img = Image.open("assets/snowy.png")
             icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="비/눈")
+            self.wth2_label.configure(text="비/눈")
 
         elif weather_dict["PTY"][1] == "3":
             img = Image.open("assets/snowy2.png")
             icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="눈")
+            self.wth2_label.configure(text="눈")
 
         elif weather_dict["PTY"][1] == "5":
             img = Image.open("assets/rainy.png")
             icon = ImageTk.PhotoImage(img.resize((width, height)))
-            self.wth2_label.configure(image=icon, compound="left", text="비")
+            self.wth2_label.configure(text="비")
 
-        self.wth2_label.image = icon
+        self.wth2_icon.configure(image=icon)
+        self.wth2_icon.image = icon
 
     def WeatherIn4(self):
         self.temp4_label.configure(text=weather_dict["temp"][2] + "°C")
@@ -186,7 +224,7 @@ class Weather(Frame):
             else:
                 img2 = Image.open("assets/clear_night.png")
                 icon2 = ImageTk.PhotoImage(img2.resize((width, height)))
-            self.wth4_label.configure(image=icon2, compound="left", text="맑음 ")
+            self.wth4_label.configure(text="맑음 ")
 
         elif weather_dict["SKY"][2] == "3":
             if (sunsetrise_api.get_sunset()[0] < int(time.strftime("%H%M")) < sunsetrise_api.get_sunset()[1]):
@@ -195,33 +233,34 @@ class Weather(Frame):
             else:
                 img2 = Image.open("assets/cloudy_night.png")
                 icon2 = ImageTk.PhotoImage(img2.resize((width, height)))           
-            self.wth4_label.configure(image=icon2, compound="left", text="구름많음 ")
+            self.wth4_label.configure(text="구름많음 ")
         
         elif weather_dict["SKY"][2] == "4":
             img2 = Image.open("assets/too_cloudy.png")
             icon2 = ImageTk.PhotoImage(img2.resize((width, height)))
-            self.wth4_label.configure(image=icon2, compound="left", text="흐림 ")
+            self.wth4_label.configure(text="흐림 ")
 
         elif weather_dict["PTY"][2] == "1":
             img2 = Image.open("assets/rainy2.png")
             icon2 = ImageTk.PhotoImage(img2.resize((width, height)))
-            self.wth4_label.configure(image=icon2, compound="left", text="비 ")
+            self.wth4_label.configure(text="비 ")
 
         elif weather_dict["PTY"][2] == "2":
             img2 = Image.open("assets/snowy.png")
             icon2 = ImageTk.PhotoImage(img2.resize((width, height)))
-            self.wth4_label.configure(image=icon2, compound="left", text="비/눈 ")
+            self.wth4_label.configure(text="비/눈 ")
 
         elif weather_dict["PTY"][2] == "3":
             img2 = Image.open("assets/snowy2.png")
             icon2 = ImageTk.PhotoImage(img2.resize((width, height)))
-            self.wth4_label.configure(image=icon2, compound="left", text="눈 ")
+            self.wth4_label.configure(text="눈 ")
 
         elif weather_dict["PTY"][2] == "5":
             img2 = Image.open("assets/rainy.png")
             icon2 = ImageTk.PhotoImage(img2.resize((width, height)))
-            self.wth4_label.configure(image=icon2, compound="left", text="비 ")
+            self.wth4_label.configure(text="비 ")
             
+        self.wth4_icon.configure(image=icon2)
         self.wth4_label.image = icon2
 
 class News(Frame):
