@@ -14,7 +14,7 @@ def get_sunset():
     오늘의 일출/일몰 시간이 포함된 sun_list가 리턴됨.
     """
     # secret_key.json에 저장된 일반 인증키(Encoding)를 불러오기
-    with open("module/secret_key.json") as json_file:
+    with open("secret.json") as json_file:
         json_data = json.load(json_file)
 
     url = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo"
@@ -25,13 +25,13 @@ def get_sunset():
             urllib.parse.quote_plus("locdate"): time.strftime("%Y%m%d"),
             urllib.parse.quote_plus("location"): "서울"
         })
-
+    print(url + queryParams)
     res = requests.get(url + queryParams)
     xml = xmltodict.parse(res.text)
     dict1 = json.loads(json.dumps(xml))
     dict_data = dict1['response']['body']['items']['item']
 
-    sun_list = []
+    sun_list = list()
     sun_list.append(int(dict_data["sunrise"]))
     sun_list.append(int(dict_data["sunset"]))
 
@@ -39,5 +39,4 @@ def get_sunset():
 
 
 if __name__ == "__main__":
-   print(get_sunset())
-   print(get_sunset().__doc__)
+   get_sunset()

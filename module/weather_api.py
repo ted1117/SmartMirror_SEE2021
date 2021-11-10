@@ -100,3 +100,4 @@ def get_weather():
 
 if __name__ == "__main__":
     get_weather()
+    print(get_weather())
